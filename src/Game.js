@@ -1,7 +1,15 @@
 import { useState } from "react";
+import OpenAI from "openai";
 import Word from "./Word";
 import Keyboard from "./Keyboard";
 import StickFigure from "./StickFigure";
+
+const openAIApiKey = process.env.REACT_APP_OPENAI_API_KEY;
+
+const openai = new OpenAI({
+  apiKey: openAIApiKey,
+  dangerouslyAllowBrowser: true,
+});
 
 const Game = () => {
   const [chosenWord, setChosenWord] = useState("");
@@ -12,12 +20,24 @@ const Game = () => {
   const [hint, setHint] = useState("");
   const [numberOfWrongSelections, setNumberOfWrongSelections] = useState(0);
 
-  function fetchNewGuessWord() {
-    const xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", "https://random-words-api.vercel.app/word", false); // false for synchronous request
-    xmlHttp.send(null);
-    const newGuessWord = JSON.parse(xmlHttp.response)[0].word.toUpperCase();
-    const newHint = JSON.parse(xmlHttp.response)[0].definition;
+  async function fetchNewGuessWord() {
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content:
+            "Give me a random word and its definition on a separate line. Don't say anything else except that, your response has to only have two lines. Example:Avuncular\nKind, friendly, and generous, especially to younger or less experienced people.",
+        },
+      ],
+    });
+
+    console.log(response.choices[0].message.content);
+
+    const responseContent = response.choices[0].message.content.split("\n");
+
+    const newGuessWord = responseContent[0].toUpperCase();
+    const newHint = responseContent[1];
     setChosenWord(newGuessWord);
     setDiscoveredLetters(Array(newGuessWord.length).fill(false));
     setHint(newHint);
@@ -37,6 +57,7 @@ const Game = () => {
 
     const currentDiscoveredLetters = [...discoveredLetters];
     const currentPickedLetters = [...userPickedLetters];
+
     if (!currentPickedLetters.includes(letter)) {
       currentPickedLetters.push(letter);
       setUserPickedLetters(currentPickedLetters);

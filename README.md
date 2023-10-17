@@ -16,8 +16,11 @@ A simple Hangman game built using React and Tailwind CSS.
 ## Installation
 
 1. Clone this repository.
-2. Run `npm install` to install dependencies.
-3. Run `npm start` to start the game.
+2. Create a .env file in the project root directory and add your OpenAI API Key. You can obtain an API Key from the OpenAI website. Add the following content:
+   `REACT_APP_OPENAI_API_KEY=your-api-key`
+   Replace `your-api-key` with your actual API Key.
+3. Run `npm install` to install dependencies.
+4. Run `npm start` to start the game.
 
 ## Usage
 
