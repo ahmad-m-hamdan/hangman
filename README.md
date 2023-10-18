@@ -16,8 +16,8 @@ A simple Hangman game built using React and Tailwind CSS.
 ## Installation
 
 1. Clone this repository.
-2. Create a .env file in the project root directory and add your OpenAI API Key. You can obtain an API Key from the OpenAI website. Add the following content:
-   `REACT_APP_OPENAI_API_KEY=your-api-key`
+2. Create a .env file in the project root directory and add your OpenAI API Key. You can obtain an API Key from the OpenAI website. Add the following content:  
+   `REACT_APP_OPENAI_API_KEY=your-api-key`  
    Replace `your-api-key` with your actual API Key.
 3. Run `npm install` to install dependencies.
 4. Run `npm start` to start the game.
@@ -48,7 +48,7 @@ This project is licensed under the MIT License.
 
 ## Acknowledgments
 
-- API used for word selection: mcnaveen (https://github.com/mcnaveen/Random-Words-API)
+- OpenAPI used for word selection: mcnaveen (https://openai.com/)
 - Stick figure sample: Loray O'Connell (https://codepen.io/lorayoconnell/pen/pyayOP)
 
 ## Contact
