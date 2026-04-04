@@ -1,51 +1,50 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import OpenAI from "openai";
 import Word from "./Word";
 import Keyboard from "./Keyboard";
 import StickFigure from "./StickFigure";
 
-const openAIApiKey = process.env.REACT_APP_OPENAI_API_KEY;
-
-const openai = new OpenAI({
-  apiKey: openAIApiKey,
-  dangerouslyAllowBrowser: true,
-});
-
 const Game = () => {
   const [chosenWord, setChosenWord] = useState("");
-  const [discoveredLetters, setDiscoveredLetters] = useState(
-    Array(chosenWord.length).fill(false)
-  );
+  const [discoveredLetters, setDiscoveredLetters] = useState([]);
   const [userPickedLetters, setUserPickedLetters] = useState([]);
   const [hint, setHint] = useState("");
   const [numberOfWrongSelections, setNumberOfWrongSelections] = useState(0);
+  const isFetching = useRef(false);
 
   async function fetchNewGuessWord() {
+    if (isFetching.current) return;
+    isFetching.current = true;
+
+    const openai = new OpenAI({
+      apiKey: process.env.REACT_APP_GITHUB_TOKEN || "placeholder",
+      baseURL: "https://models.inference.ai.azure.com",
+      dangerouslyAllowBrowser: true,
+    });
+
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "user",
-          content:
-            "Give me a random word and its definition on a separate line. Don't say anything else except that, your response has to only have two lines. Example:Avuncular\nKind, friendly, and generous, especially to younger or less experienced people.",
+          content: `Give me a random word and its definition on a separate line. Use a truly random word each time, do not repeat common words. The current timestamp is ${Date.now()} to ensure uniqueness. Don't say anything else except that, your response has to only have two lines. Example:Avuncular\nKind, friendly, and generous, especially to younger or less experienced people.`,
         },
       ],
+      temperature: 1.5,
     });
 
-    console.log(response.choices[0].message.content);
-
     const responseContent = response.choices[0].message.content.split("\n");
-
     const newGuessWord = responseContent[0].toUpperCase();
     const newHint = responseContent[1];
     setChosenWord(newGuessWord);
     setDiscoveredLetters(Array(newGuessWord.length).fill(false));
     setHint(newHint);
+    isFetching.current = false;
   }
 
-  if (chosenWord === "") {
+  useEffect(() => {
     fetchNewGuessWord();
-  }
+  }, []);
 
   const hasPlayerWon = discoveredLetters.includes(false) ? false : true;
 
@@ -74,11 +73,12 @@ const Game = () => {
   }
 
   function resetGame() {
-    const currentDiscoveredLetters = Array(chosenWord.length).fill(false);
-    setDiscoveredLetters(currentDiscoveredLetters);
-    fetchNewGuessWord();
+    setChosenWord("");
+    setDiscoveredLetters([]);
     setUserPickedLetters([]);
     setNumberOfWrongSelections(0);
+    setHint("");
+    fetchNewGuessWord();
   }
 
   return (
