@@ -1,9 +1,21 @@
+import { useEffect } from "react";
 import Button from "./Button";
 
 const Keyboard = ({ userPickedLetters, onPlay }) => {
   function handleButtonClick(selectedLetter) {
     onPlay(selectedLetter);
   }
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      const letter = e.key.toUpperCase();
+      if (letter.length === 1 && letter >= "A" && letter <= "Z") {
+        handleButtonClick(letter);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
 
   const keyboardKeys = [
     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
