@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import OpenAI from "openai";
 import Word from "./Word";
 import Keyboard from "./Keyboard";
 import StickFigure from "./StickFigure";
@@ -28,43 +27,26 @@ const Game = () => {
     isFetching.current = true;
     setIsLoading(true);
 
-    const openai = new OpenAI({
-      apiKey: process.env.REACT_APP_GITHUB_TOKEN || "placeholder",
-      baseURL: "https://models.inference.ai.azure.com",
-      dangerouslyAllowBrowser: true,
-    });
+    try {
+      const response = await fetch("/api/get-word", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ level: selectedLevel, timestamp: Date.now() }),
+      });
 
-    const levelDescriptions = {
-      Beginner:
-        "a very simple, common everyday word suitable for children (e.g. cat, ball, tree)",
-      Intermediate: "a moderately common word that an average adult would know",
-      Advanced:
-        "an uncommon or sophisticated word that requires a good vocabulary",
-      Expert:
-        "a very rare, obscure, or highly technical word that most people would not know",
-    };
+      if (!response.ok) throw new Error("API error");
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "user",
-          content: `Give me ${levelDescriptions[selectedLevel]} and its definition on a separate line. CRITICAL: You must pick a genuinely random word — do NOT default to the same common words you typically suggest. The English language has hundreds of thousands of words; explore the full breadth of it. Actively avoid words you have given before. The current timestamp is ${Date.now()} — use this as a random seed to vary your selection every single time. Your entire response must use English characters only — do not include any characters from other scripts or languages. Don't say anything else except that, your response has to only have two lines. Example:\nAvuncular\nKind, friendly, and generous, especially to younger or less experienced people.`,
-        },
-      ],
-      temperature: 1.5,
-    });
-
-    const responseContent = response.choices[0].message.content.split("\n");
-    const newGuessWord = responseContent[0]
-      .replace(/[^a-zA-Z]/g, "")
-      .toUpperCase();
-    const newHint = responseContent[1].trim();
-    setChosenWord(newGuessWord);
-    setDiscoveredLetters(Array(newGuessWord.length).fill(false));
-    setHint(newHint);
-    isFetching.current = false;
-    setIsLoading(false);
+      const { word, hint } = await response.json();
+      setChosenWord(word);
+      setDiscoveredLetters(Array(word.length).fill(false));
+      setHint(hint);
+    } catch (err) {
+      console.error("Failed to fetch word:", err);
+      setLevel(null);
+    } finally {
+      isFetching.current = false;
+      setIsLoading(false);
+    }
   }
 
   useEffect(() => {
