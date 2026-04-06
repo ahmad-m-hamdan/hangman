@@ -114,7 +114,10 @@ const Game = () => {
           {LEVELS.map(({ label, color, shadow }) => (
             <button
               key={label}
-              onClick={() => setLevel(label)}
+              onClick={() => {
+                setIsLoading(true);
+                setLevel(label);
+              }}
               style={{
                 ...retroFont,
                 backgroundColor: color,
