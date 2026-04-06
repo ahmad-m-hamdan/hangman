@@ -160,40 +160,24 @@ const Game = () => {
             0%, 100% { opacity: 1; }
             50% { opacity: 0; }
           }
-          .retro-blink { animation: retro-blink 1s step-start infinite; }
-          @keyframes dot-cycle {
-            0%   { content: '.'; }
-            33%  { content: '..'; }
-            66%  { content: '...'; }
-            100% { content: '.'; }
-          }
-          .loading-dots::after {
-            content: '';
-            animation: dot-cycle 1.2s steps(1) infinite;
-          }
         `}</style>
         <div className="flex flex-col items-center justify-center mt-16 gap-10">
           <span
             style={{ ...retroFont }}
-            className="text-yellow-400 text-base tracking-widest retro-blink"
+            className="text-yellow-400 text-base tracking-widest"
           >
             LOADING
-            <span className="loading-dots" />
-          </span>
-          <div className="flex gap-3">
-            {[0, 1, 2, 3].map((i) => (
-              <div
+            {[0, 1, 2].map((i) => (
+              <span
                 key={i}
                 style={{
-                  width: "14px",
-                  height: "14px",
-                  backgroundColor: "#facc15",
-                  imageRendering: "pixelated",
-                  animation: `retro-blink 1s step-start ${i * 0.25}s infinite`,
+                  animation: `retro-blink 0.9s step-start ${i * 0.3}s infinite`,
                 }}
-              />
+              >
+                .
+              </span>
             ))}
-          </div>
+          </span>
         </div>
       </>
     );
@@ -206,7 +190,11 @@ const Game = () => {
         className="flex justify-center content-center mb-2 px-4"
         style={{ minHeight: "4rem" }}
       >
-        <Word chosenWord={chosenWord} lettersStatus={discoveredLetters} hasPlayerLost={hasPlayerLost} />
+        <Word
+          chosenWord={chosenWord}
+          lettersStatus={discoveredLetters}
+          hasPlayerLost={hasPlayerLost}
+        />
       </div>
       <div
         className="winner-status flex justify-center px-8 mb-6"
