@@ -1,6 +1,6 @@
 import Letter from "./Letter";
 
-const Word = ({ chosenWord, lettersStatus }) => {
+const Word = ({ chosenWord, lettersStatus, hasPlayerLost }) => {
   let chosenWordCharacters = [];
 
   for (var i = 0; i < chosenWord.length; i++) {
@@ -9,7 +9,12 @@ const Word = ({ chosenWord, lettersStatus }) => {
       showLetter = true;
     }
     chosenWordCharacters.push(
-      <Letter key={i} letter={chosenWord.charAt(i)} showLetter={showLetter} />
+      <Letter
+        key={i}
+        letter={chosenWord.charAt(i)}
+        showLetter={showLetter}
+        revealRed={hasPlayerLost && !lettersStatus[i]}
+      />
     );
   }
 

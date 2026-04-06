@@ -206,7 +206,7 @@ const Game = () => {
         className="flex justify-center content-center mb-2 px-4"
         style={{ minHeight: "4rem" }}
       >
-        <Word chosenWord={chosenWord} lettersStatus={discoveredLetters} />
+        <Word chosenWord={chosenWord} lettersStatus={discoveredLetters} hasPlayerLost={hasPlayerLost} />
       </div>
       <div
         className="winner-status flex justify-center px-8 mb-6"
