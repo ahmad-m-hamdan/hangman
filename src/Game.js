@@ -212,7 +212,7 @@ const Game = () => {
         className="winner-status flex justify-center px-8 mb-6"
         style={{ minHeight: "3rem" }}
       >
-        <span className="winner-message font-primary text-2xl font-bold text-red-500 text-center">
+        <span className="winner-message font-primary text-base font-bold text-red-500 text-center">
           {hasPlayerWon === false
             ? hasPlayerLost
               ? "You lost!"

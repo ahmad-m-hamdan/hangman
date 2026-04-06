@@ -5,7 +5,7 @@ module.exports = {
   theme: {
     extend: {},
     fontFamily: {
-      primary: ["cursive", "sans"],
+      primary: ["'Press Start 2P'", "cursive"],
     },
   },
   plugins: [],
