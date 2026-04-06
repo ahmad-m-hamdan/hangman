@@ -18,7 +18,7 @@ A simple Hangman game built using React and Tailwind CSS.
 
 ## Play Online
 
-No setup needed — just visit [https://hangman-by-hamdan.vercel.app/](https://hangman-by-hamdan.vercel.app/) to play instantly in your browser.
+No setup needed. Just visit [https://hangman-by-hamdan.vercel.app/](https://hangman-by-hamdan.vercel.app/) to play instantly in your browser.
 
 ## Installation
 
@@ -31,7 +31,7 @@ No setup needed — just visit [https://hangman-by-hamdan.vercel.app/](https://h
    - Go to [https://github.com/settings/tokens](https://github.com/settings/tokens).
    - Click **"Generate new token"** → **"Generate new token (classic)"**.
    - Give it a name (e.g. `hangman-game`).
-   - No special scopes are required for GitHub Models — leave all checkboxes unchecked.
+   - No special scopes are required for GitHub Models. Leave all checkboxes unchecked.
    - Click **"Generate token"** and copy it immediately (you won't see it again).
 4. Create a free account at [https://vercel.com](https://vercel.com) if you don't have one.
 5. Install the Vercel CLI globally:
@@ -46,7 +46,7 @@ No setup needed — just visit [https://hangman-by-hamdan.vercel.app/](https://h
    - Run `vercel dev` and follow the prompts to link the project to your Vercel account.
    - Go to your project on [https://vercel.com/dashboard](https://vercel.com/dashboard) → **Settings** → **Environment Variables**.
    - Add a variable named `GITHUB_TOKEN` with your GitHub PAT as the value.
-   - Stop `vercel dev`, then run it again — it will pull the token into your local `.env.local` automatically.
+   - Stop `vercel dev`, then run it again. It will pull the token into your local `.env.local` automatically.
 
 ## Usage
 
