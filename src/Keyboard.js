@@ -25,7 +25,7 @@ const Keyboard = ({ userPickedLetters, onPlay }) => {
 
   const buttonItems = keyboardKeys.map((subKeysArray, parentIndex) => (
     <div
-      className="flex justify-center last:mb-0 mb-5"
+      className="flex justify-center gap-1 sm:gap-4 last:mb-0 mb-3"
       key={"keyboard-row-" + parentIndex}
     >
       {subKeysArray.map((keyboardKey, childIndex) => (
@@ -39,7 +39,7 @@ const Keyboard = ({ userPickedLetters, onPlay }) => {
     </div>
   ));
 
-  return <div className="keyboard mb-8">{buttonItems}</div>;
+  return <div className="keyboard mb-8 px-4">{buttonItems}</div>;
 };
 
 export default Keyboard;

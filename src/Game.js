@@ -203,7 +203,7 @@ const Game = () => {
     <>
       {header}
       <div
-        className="flex justify-center content-center mb-2"
+        className="flex justify-center content-center mb-2 px-4"
         style={{ minHeight: "4rem" }}
       >
         <Word chosenWord={chosenWord} lettersStatus={discoveredLetters} />
@@ -233,7 +233,7 @@ const Game = () => {
       >
         <StickFigure wrongSelectionsCounter={numberOfWrongSelections} />
       </div>
-      <div className="flex justify-center content-center">
+      <div className="flex justify-center content-center mb-10">
         <button
           onClick={resetGame}
           style={{
