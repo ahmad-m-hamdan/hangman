@@ -8,6 +8,7 @@ const Keyboard = ({ userPickedLetters, onPlay }) => {
 
   useEffect(() => {
     function handleKeyDown(e) {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
       const letter = e.key.toUpperCase();
       if (letter.length === 1 && letter >= "A" && letter <= "Z") {
         handleButtonClick(letter);
