@@ -18,7 +18,7 @@ A simple Hangman game built using React and Tailwind CSS.
 
 ## Play Online
 
-No setup needed — just visit [https://hangman-three-smoky.vercel.app/](https://hangman-three-smoky.vercel.app/) to play instantly in your browser.
+No setup needed — just visit [https://hangman-by-hamdan.vercel.app/](https://hangman-by-hamdan.vercel.app/) to play instantly in your browser.
 
 ## Installation
 
