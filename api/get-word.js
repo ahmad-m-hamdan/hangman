@@ -22,7 +22,8 @@ const categories = [
   "weather", "clothing", "architecture", "mythology",
 ];
 
-const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const allLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const beginnerLetters = "ABCDEFGHIJKLMNOPRSTUVW";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -35,7 +36,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Invalid level" });
   }
 
-  const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+  const pool = level === "Beginner" ? beginnerLetters : allLetters;
+  const randomLetter = pool[Math.floor(Math.random() * pool.length)];
   const randomCategory =
     categories[Math.floor(Math.random() * categories.length)];
   const [min, max] = lengthRanges[level];
