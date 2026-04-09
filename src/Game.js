@@ -31,7 +31,7 @@ const Game = () => {
       const response = await fetch("/api/get-word", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ level: selectedLevel, timestamp: Date.now() }),
+        body: JSON.stringify({ level: selectedLevel }),
       });
 
       if (!response.ok) throw new Error("API error");
