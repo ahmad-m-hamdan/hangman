@@ -20,6 +20,8 @@ const Game = () => {
   const [hint, setHint] = useState("");
   const [numberOfWrongSelections, setNumberOfWrongSelections] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [hintRevealedIndices, setHintRevealedIndices] = useState([]);
+  const [hintsUsed, setHintsUsed] = useState(0);
   const isFetching = useRef(false);
 
   async function fetchNewGuessWord(selectedLevel) {
@@ -39,6 +41,8 @@ const Game = () => {
       const { word, hint } = await response.json();
       setChosenWord(word);
       setDiscoveredLetters(Array(word.length).fill(false));
+      setHintRevealedIndices(Array(word.length).fill(false));
+      setHintsUsed(0);
       setHint(hint);
     } catch (err) {
       console.error("Failed to fetch word:", err);
@@ -56,6 +60,41 @@ const Game = () => {
   const hasPlayerWon =
     discoveredLetters.length > 0 && !discoveredLetters.includes(false);
   const hasPlayerLost = numberOfWrongSelections >= 6;
+
+  const hintsEnabled = level === "Beginner" || level === "Intermediate";
+  const uniqueLettersInWord = [...new Set(chosenWord.split(""))].filter(
+    Boolean,
+  );
+  const maxHints = Math.max(1, Math.floor(uniqueLettersInWord.length / 3));
+  const undiscoveredUniqueLetters = uniqueLettersInWord.filter(
+    (l) => !userPickedLetters.includes(l),
+  );
+  const canUseHint =
+    hintsEnabled &&
+    !hasPlayerWon &&
+    !hasPlayerLost &&
+    hintsUsed < maxHints &&
+    undiscoveredUniqueLetters.length >= 2;
+
+  function useHint() {
+    if (!canUseHint) return;
+    const letterToReveal =
+      undiscoveredUniqueLetters[
+        Math.floor(Math.random() * undiscoveredUniqueLetters.length)
+      ];
+    const newDiscoveredLetters = [...discoveredLetters];
+    const newHintRevealedIndices = [...hintRevealedIndices];
+    for (let i = 0; i < chosenWord.length; i++) {
+      if (chosenWord[i] === letterToReveal) {
+        newDiscoveredLetters[i] = true;
+        newHintRevealedIndices[i] = true;
+      }
+    }
+    setDiscoveredLetters(newDiscoveredLetters);
+    setHintRevealedIndices(newHintRevealedIndices);
+    setUserPickedLetters([...userPickedLetters, letterToReveal]);
+    setHintsUsed(hintsUsed + 1);
+  }
 
   function checkIfLetterExists(letter) {
     if (hasPlayerWon) return;
@@ -85,6 +124,8 @@ const Game = () => {
     setUserPickedLetters([]);
     setNumberOfWrongSelections(0);
     setHint("");
+    setHintRevealedIndices([]);
+    setHintsUsed(0);
     setIsLoading(false);
     setLevel(null);
   }
@@ -197,12 +238,10 @@ const Game = () => {
           chosenWord={chosenWord}
           lettersStatus={discoveredLetters}
           hasPlayerLost={hasPlayerLost}
+          hintRevealedIndices={hintRevealedIndices}
         />
       </div>
-      <div
-        className="winner-status flex justify-center px-8 mb-6"
-        style={{ minHeight: "3rem" }}
-      >
+      <div className="winner-status flex justify-center px-8 mb-6">
         <span className="winner-message font-primary text-base font-bold text-red-500 text-center">
           {hasPlayerWon === false
             ? hasPlayerLost
@@ -211,6 +250,44 @@ const Game = () => {
             : "You won!"}
         </span>
       </div>
+      {hintsEnabled && (
+        <div className="flex justify-center mb-8">
+          <button
+            onClick={useHint}
+            disabled={!canUseHint}
+            style={{
+              ...retroFont,
+              backgroundColor: canUseHint ? "#a855f7" : "#4b5563",
+              boxShadow: canUseHint ? "0 6px 0 #7e22ce" : "0 6px 0 #374151",
+              border: "none",
+              color: canUseHint ? "#fff" : "#9ca3af",
+              padding: "0.6rem 1.25rem",
+              fontSize: "0.55rem",
+              cursor: canUseHint ? "pointer" : "not-allowed",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              transition: "transform 0.1s, box-shadow 0.1s",
+            }}
+            onMouseDown={(e) => {
+              if (!canUseHint) return;
+              e.currentTarget.style.transform = "translateY(4px)";
+              e.currentTarget.style.boxShadow = "0 2px 0 #7e22ce";
+            }}
+            onMouseUp={(e) => {
+              if (!canUseHint) return;
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 6px 0 #7e22ce";
+            }}
+            onMouseLeave={(e) => {
+              if (!canUseHint) return;
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 6px 0 #7e22ce";
+            }}
+          >
+            HINT ({maxHints - hintsUsed} left)
+          </button>
+        </div>
+      )}
       <Keyboard
         userPickedLetters={userPickedLetters}
         onPlay={checkIfLetterExists}

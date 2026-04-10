@@ -1,6 +1,11 @@
 import Letter from "./Letter";
 
-const Word = ({ chosenWord, lettersStatus, hasPlayerLost }) => {
+const Word = ({
+  chosenWord,
+  lettersStatus,
+  hasPlayerLost,
+  hintRevealedIndices,
+}) => {
   let chosenWordCharacters = [];
 
   for (var i = 0; i < chosenWord.length; i++) {
@@ -14,7 +19,8 @@ const Word = ({ chosenWord, lettersStatus, hasPlayerLost }) => {
         letter={chosenWord.charAt(i)}
         showLetter={showLetter}
         revealRed={hasPlayerLost && !lettersStatus[i]}
-      />
+        revealHint={hintRevealedIndices ? hintRevealedIndices[i] : false}
+      />,
     );
   }
 
