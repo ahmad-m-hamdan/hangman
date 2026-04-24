@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Word from "./Word";
 import Keyboard from "./Keyboard";
 import StickFigure from "./StickFigure";
@@ -12,6 +12,11 @@ const LEVELS = [
 
 const retroFont = { fontFamily: "'Press Start 2P', cursive" };
 
+const AUDIO_PATHS = {
+  menu: "/audio/menu-theme.mp3",
+  game: "/audio/game-theme.mp3",
+};
+
 const Game = () => {
   const [level, setLevel] = useState(null);
   const [chosenWord, setChosenWord] = useState("");
@@ -20,9 +25,115 @@ const Game = () => {
   const [hint, setHint] = useState("");
   const [numberOfWrongSelections, setNumberOfWrongSelections] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMenuAudioLoaded, setIsMenuAudioLoaded] = useState(false);
+  const [isGameAudioLoaded, setIsGameAudioLoaded] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [hintRevealedIndices, setHintRevealedIndices] = useState([]);
   const [hintsUsed, setHintsUsed] = useState(0);
   const isFetching = useRef(false);
+  const menuAudioRef = useRef(null);
+  const gameAudioRef = useRef(null);
+
+  const attemptPlay = useCallback(async (audio) => {
+    if (!audio) return;
+    try {
+      await audio.play();
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const getActiveAudio = useCallback(() => {
+    return level ? gameAudioRef.current : menuAudioRef.current;
+  }, [level]);
+
+  const tryPlayActiveAudio = useCallback(async () => {
+    const isActiveAudioLoaded = level ? isGameAudioLoaded : isMenuAudioLoaded;
+    if (!isActiveAudioLoaded) return;
+
+    const activeAudio = getActiveAudio();
+    if (!activeAudio) return;
+
+    await attemptPlay(activeAudio);
+  }, [
+    attemptPlay,
+    getActiveAudio,
+    isGameAudioLoaded,
+    isMenuAudioLoaded,
+    level,
+  ]);
+
+  useEffect(() => {
+    const menuAudio = new Audio(AUDIO_PATHS.menu);
+    const gameAudio = new Audio(AUDIO_PATHS.game);
+
+    menuAudio.preload = "auto";
+    gameAudio.preload = "auto";
+    menuAudio.loop = true;
+    gameAudio.loop = true;
+
+    const onMenuReady = () => setIsMenuAudioLoaded(true);
+    const onGameReady = () => setIsGameAudioLoaded(true);
+
+    if (menuAudio.readyState >= 4) {
+      setIsMenuAudioLoaded(true);
+    } else {
+      menuAudio.addEventListener("canplaythrough", onMenuReady, { once: true });
+    }
+
+    if (gameAudio.readyState >= 4) {
+      setIsGameAudioLoaded(true);
+    } else {
+      gameAudio.addEventListener("canplaythrough", onGameReady, { once: true });
+    }
+
+    menuAudio.load();
+    gameAudio.load();
+
+    menuAudioRef.current = menuAudio;
+    gameAudioRef.current = gameAudio;
+
+    return () => {
+      menuAudio.pause();
+      gameAudio.pause();
+      menuAudio.removeEventListener("canplaythrough", onMenuReady);
+      gameAudio.removeEventListener("canplaythrough", onGameReady);
+      menuAudioRef.current = null;
+      gameAudioRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (menuAudioRef.current) {
+      menuAudioRef.current.muted = isMuted;
+    }
+    if (gameAudioRef.current) {
+      gameAudioRef.current.muted = isMuted;
+    }
+
+    if (!isMuted) {
+      tryPlayActiveAudio();
+    }
+  }, [isMuted, tryPlayActiveAudio]);
+
+  useEffect(() => {
+    const menuAudio = menuAudioRef.current;
+    const gameAudio = gameAudioRef.current;
+
+    if (!menuAudio || !gameAudio) return;
+
+    if (!level) {
+      gameAudio.pause();
+      gameAudio.currentTime = 0;
+      tryPlayActiveAudio();
+      return;
+    }
+
+    menuAudio.pause();
+    menuAudio.currentTime = 0;
+    tryPlayActiveAudio();
+  }, [level, isMenuAudioLoaded, isGameAudioLoaded, tryPlayActiveAudio]);
 
   async function fetchNewGuessWord(selectedLevel) {
     if (isFetching.current) return;
@@ -56,6 +167,23 @@ const Game = () => {
   useEffect(() => {
     if (level) fetchNewGuessWord(level);
   }, [level]);
+
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "visible") return;
+      if (!isMuted) tryPlayActiveAudio();
+    };
+
+    window.addEventListener("focus", onVisibilityChange);
+    window.addEventListener("pageshow", onVisibilityChange);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      window.removeEventListener("focus", onVisibilityChange);
+      window.removeEventListener("pageshow", onVisibilityChange);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [isMuted, tryPlayActiveAudio]);
 
   const hasPlayerWon =
     discoveredLetters.length > 0 && !discoveredLetters.includes(false);
@@ -141,6 +269,62 @@ const Game = () => {
       <h2 style={{ ...retroFont }} className="text-sm text-gray-400">
         by Ahmad Hamdan
       </h2>
+      <button
+        type="button"
+        onClick={() => setIsMuted((prev) => !prev)}
+        aria-label={isMuted ? "Unmute music" : "Mute music"}
+        title={isMuted ? "Unmute music" : "Mute music"}
+        style={{ ...retroFont }}
+        className="mt-4 inline-flex h-11 w-11 items-center justify-center bg-black text-white shadow-[0_6px_0_#6b7280] transition-transform"
+        onMouseDown={(e) => {
+          e.currentTarget.style.transform = "translateY(4px)";
+          e.currentTarget.style.boxShadow = "0 2px 0 #6b7280";
+        }}
+        onMouseUp={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
+        }}
+      >
+        <span aria-hidden="true" className="inline-flex items-center">
+          {isMuted ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <line x1="23" y1="9" x2="17" y2="15" />
+              <line x1="17" y1="9" x2="23" y2="15" />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </svg>
+          )}
+        </span>
+      </button>
     </div>
   );
 
@@ -195,7 +379,7 @@ const Game = () => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || (level && !isGameAudioLoaded)) {
     return (
       <>
         {header}

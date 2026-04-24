@@ -81,7 +81,8 @@ This project is licensed under the MIT License.
 ## Acknowledgments
 
 - GitHub Models used for word selection: [https://github.com/marketplace/models](https://github.com/marketplace/models)
-- Stick figure sample: Loray O'Connell (https://codepen.io/lorayoconnell/pen/pyayOP)
+- Stick figure sample: Inspired by [Loray O'Connell](https://codepen.io/lorayoconnell/pen/pyayOP)
+- Music by [Vlad Krotov](https://pixabay.com/users/moodmode-33139253/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=278083) from [Pixabay](https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=278083)
 
 ## Contact
 
