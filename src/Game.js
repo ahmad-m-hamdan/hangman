@@ -426,7 +426,7 @@ const Game = () => {
         />
       </div>
       <div className="winner-status flex justify-center px-8 mb-6">
-        <span className="winner-message font-primary text-base font-bold text-red-500 text-center">
+        <span className="winner-message font-primary text-sm md:text-base font-bold text-red-500 text-center">
           {hasPlayerWon === false
             ? hasPlayerLost
               ? "You lost!"
