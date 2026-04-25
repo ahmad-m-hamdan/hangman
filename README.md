@@ -2,7 +2,7 @@
 
 A simple Hangman game built using React and Tailwind CSS.
 
-🎮 **Play it now:** [https://hangman-three-smoky.vercel.app/](https://hangman-three-smoky.vercel.app/)
+🎮 **Play it now:** [https://hangman-by-hamdan.vercel.app/](https://hangman-by-hamdan.vercel.app/)
 
 ## Table of Contents
 
