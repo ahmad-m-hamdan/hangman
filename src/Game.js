@@ -269,62 +269,103 @@ const Game = () => {
       <h2 style={{ ...retroFont }} className="text-sm text-gray-400">
         by Ahmad Hamdan
       </h2>
-      <button
-        type="button"
-        onClick={() => setIsMuted((prev) => !prev)}
-        aria-label={isMuted ? "Unmute music" : "Mute music"}
-        title={isMuted ? "Unmute music" : "Mute music"}
-        style={{ ...retroFont }}
-        className="mt-4 inline-flex h-11 w-11 items-center justify-center bg-black text-white shadow-[0_6px_0_#6b7280] transition-transform"
-        onMouseDown={(e) => {
-          e.currentTarget.style.transform = "translateY(4px)";
-          e.currentTarget.style.boxShadow = "0 2px 0 #6b7280";
-        }}
-        onMouseUp={(e) => {
-          e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
-        }}
-      >
-        <span aria-hidden="true" className="inline-flex items-center">
-          {isMuted ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <line x1="23" y1="9" x2="17" y2="15" />
-              <line x1="17" y1="9" x2="23" y2="15" />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-            </svg>
-          )}
-        </span>
-      </button>
+      <div className="mt-4 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => setIsMuted((prev) => !prev)}
+          aria-label={isMuted ? "Unmute music" : "Mute music"}
+          title={isMuted ? "Unmute music" : "Mute music"}
+          style={{ ...retroFont }}
+          className="inline-flex h-11 w-11 items-center justify-center bg-black text-white shadow-[0_6px_0_#6b7280] transition-transform"
+          onMouseDown={(e) => {
+            e.currentTarget.style.transform = "translateY(4px)";
+            e.currentTarget.style.boxShadow = "0 2px 0 #6b7280";
+          }}
+          onMouseUp={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
+          }}
+        >
+          <span aria-hidden="true" className="inline-flex items-center">
+            {isMuted ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <line x1="23" y1="9" x2="17" y2="15" />
+                <line x1="17" y1="9" x2="23" y2="15" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+              </svg>
+            )}
+          </span>
+        </button>
+        {level && (
+          <button
+            type="button"
+            onClick={resetGame}
+            aria-label="Try another word"
+            title="Try another word"
+            style={{ ...retroFont }}
+            className="inline-flex h-11 w-11 items-center justify-center bg-black text-white shadow-[0_6px_0_#6b7280] transition-transform"
+            onMouseDown={(e) => {
+              e.currentTarget.style.transform = "translateY(4px)";
+              e.currentTarget.style.boxShadow = "0 2px 0 #6b7280";
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
+            }}
+          >
+            <span aria-hidden="true" className="inline-flex items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 .49-4.95" />
+              </svg>
+            </span>
+          </button>
+        )}
+      </div>
     </div>
   );
 
@@ -481,39 +522,6 @@ const Game = () => {
         }}
       >
         <StickFigure wrongSelectionsCounter={numberOfWrongSelections} />
-      </div>
-      <div className="flex justify-center content-center mb-10">
-        <button
-          onClick={resetGame}
-          style={{
-            ...retroFont,
-            backgroundColor: "#6366f1",
-            boxShadow: "0 6px 0 #3730a3",
-            border: "none",
-            color: "#fff",
-            padding: "0.75rem 1.75rem",
-            fontSize: "0.7rem",
-            cursor: "pointer",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-            imageRendering: "pixelated",
-            transition: "transform 0.1s, box-shadow 0.1s",
-          }}
-          onMouseDown={(e) => {
-            e.currentTarget.style.transform = "translateY(4px)";
-            e.currentTarget.style.boxShadow = "0 2px 0 #3730a3";
-          }}
-          onMouseUp={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "0 6px 0 #3730a3";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "0 6px 0 #3730a3";
-          }}
-        >
-          Try another!
-        </button>
       </div>
     </>
   );
