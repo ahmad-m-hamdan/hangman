@@ -414,10 +414,7 @@ const Game = () => {
   return (
     <>
       {header}
-      <div
-        className="flex justify-center content-center mb-2 px-4"
-        style={{ minHeight: "4rem" }}
-      >
+      <div className="flex justify-center content-center mb-4 px-4">
         <Word
           chosenWord={chosenWord}
           lettersStatus={discoveredLetters}
