@@ -425,8 +425,8 @@ const Game = () => {
           hintRevealedIndices={hintRevealedIndices}
         />
       </div>
-      <div className="winner-status flex justify-center px-8 mb-6">
-        <span className="winner-message font-primary text-sm md:text-base font-bold text-red-500 text-center">
+      <div className="winner-status flex justify-center mb-6">
+        <span className="winner-message font-primary text-xs md:text-sm font-bold text-red-500 text-center">
           {hasPlayerWon === false
             ? hasPlayerLost
               ? "You lost!"
