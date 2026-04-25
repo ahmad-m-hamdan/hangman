@@ -40,7 +40,7 @@ const Keyboard = ({ userPickedLetters, onPlay }) => {
     </div>
   ));
 
-  return <div className="keyboard mb-8 px-4">{buttonItems}</div>;
+  return <div className="keyboard mb-8">{buttonItems}</div>;
 };
 
 export default Keyboard;
