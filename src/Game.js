@@ -358,45 +358,47 @@ const Game = () => {
             )}
           </span>
         </button>
-        {level && (
-          <button
-            type="button"
-            onClick={resetGame}
-            aria-label="Try another word"
-            title="Try another word"
-            style={{ ...retroFont }}
-            className="inline-flex h-11 w-11 items-center justify-center bg-black text-white shadow-[0_6px_0_#6b7280] transition-transform"
-            onMouseDown={(e) => {
-              e.currentTarget.style.transform = "translateY(4px)";
-              e.currentTarget.style.boxShadow = "0 2px 0 #6b7280";
-            }}
-            onMouseUp={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
-            }}
-          >
-            <span aria-hidden="true" className="inline-flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="1 4 1 10 7 10" />
-                <path d="M3.51 15a9 9 0 1 0 .49-4.95" />
-              </svg>
-            </span>
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={level ? resetGame : undefined}
+          disabled={!level}
+          aria-label="Try another word"
+          title="Try another word"
+          style={{ ...retroFont }}
+          className="inline-flex h-11 w-11 items-center justify-center bg-black text-white shadow-[0_6px_0_#6b7280] transition-transform disabled:opacity-30 disabled:cursor-not-allowed"
+          onMouseDown={(e) => {
+            if (!level) return;
+            e.currentTarget.style.transform = "translateY(4px)";
+            e.currentTarget.style.boxShadow = "0 2px 0 #6b7280";
+          }}
+          onMouseUp={(e) => {
+            if (!level) return;
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
+          }}
+          onMouseLeave={(e) => {
+            if (!level) return;
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 6px 0 #6b7280";
+          }}
+        >
+          <span aria-hidden="true" className="inline-flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 .49-4.95" />
+            </svg>
+          </span>
+        </button>
       </div>
     </div>
   );
