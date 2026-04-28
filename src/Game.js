@@ -17,6 +17,12 @@ const AUDIO_PATHS = {
   game: "/audio/game-theme.mp3",
 };
 
+const TIMER_SECONDS_BY_LEVEL = {
+  Intermediate: 120,
+  Advanced: 60,
+  Expert: 30,
+};
+
 const Game = () => {
   const [level, setLevel] = useState(null);
   const [chosenWord, setChosenWord] = useState("");
@@ -30,6 +36,7 @@ const Game = () => {
   const [isMuted, setIsMuted] = useState(true);
   const [hintRevealedIndices, setHintRevealedIndices] = useState([]);
   const [hintsUsed, setHintsUsed] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(null);
   const isFetching = useRef(false);
   const menuAudioRef = useRef(null);
   const gameAudioRef = useRef(null);
@@ -185,9 +192,56 @@ const Game = () => {
     };
   }, [isMuted, tryPlayActiveAudio]);
 
+  const timerSeconds = level ? (TIMER_SECONDS_BY_LEVEL[level] ?? null) : null;
+  const timerEnabled = timerSeconds !== null;
+
+  useEffect(() => {
+    if (!timerEnabled) {
+      setTimeLeft(null);
+      return;
+    }
+    setTimeLeft(timerSeconds);
+  }, [timerEnabled, timerSeconds]);
+
+  useEffect(() => {
+    if (!timerEnabled) return;
+    if (timeLeft === null || timeLeft <= 0) return;
+    if (!chosenWord || isLoading || !isGameAudioLoaded) return;
+
+    const playerWon =
+      discoveredLetters.length > 0 && !discoveredLetters.includes(false);
+    const playerLostByWrongGuesses = numberOfWrongSelections >= 6;
+    if (playerWon || playerLostByWrongGuesses) return;
+
+    const timerId = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev === null) return prev;
+        return Math.max(prev - 1, 0);
+      });
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [
+    timerEnabled,
+    timeLeft,
+    chosenWord,
+    isLoading,
+    isGameAudioLoaded,
+    discoveredLetters,
+    numberOfWrongSelections,
+  ]);
+
   const hasPlayerWon =
     discoveredLetters.length > 0 && !discoveredLetters.includes(false);
-  const hasPlayerLost = numberOfWrongSelections >= 6;
+  const hasPlayerLostByWrongGuesses = numberOfWrongSelections >= 6;
+  const hasPlayerLostByTimer = timerEnabled && timeLeft === 0;
+  const hasPlayerLost = hasPlayerLostByWrongGuesses || hasPlayerLostByTimer;
+  const formattedTime =
+    timerEnabled && timeLeft !== null
+      ? `${String(Math.floor(timeLeft / 60)).padStart(2, "0")}:${String(
+          timeLeft % 60,
+        ).padStart(2, "0")}`
+      : null;
 
   const hintsEnabled = level === "Beginner" || level === "Intermediate";
   const uniqueLettersInWord = [...new Set(chosenWord.split(""))].filter(
@@ -254,6 +308,7 @@ const Game = () => {
     setHint("");
     setHintRevealedIndices([]);
     setHintsUsed(0);
+    setTimeLeft(null);
     setIsLoading(false);
     setLevel(null);
   }
@@ -416,6 +471,7 @@ const Game = () => {
               key={label}
               onClick={() => {
                 setIsLoading(true);
+                setTimeLeft(TIMER_SECONDS_BY_LEVEL[label] ?? null);
                 setLevel(label);
               }}
               style={{
@@ -506,42 +562,52 @@ const Game = () => {
             : "You won!"}
         </span>
       </div>
-      {hintsEnabled && (
-        <div className="flex justify-center mb-8">
-          <button
-            onClick={useHint}
-            disabled={!canUseHint}
-            style={{
-              ...retroFont,
-              backgroundColor: canUseHint ? "#a855f7" : "#4b5563",
-              boxShadow: canUseHint ? "0 6px 0 #7e22ce" : "0 6px 0 #374151",
-              border: "none",
-              color: canUseHint ? "#fff" : "#9ca3af",
-              padding: "0.6rem 1.25rem",
-              fontSize: "0.55rem",
-              cursor: canUseHint ? "pointer" : "not-allowed",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              transition: "transform 0.1s, box-shadow 0.1s",
-            }}
-            onMouseDown={(e) => {
-              if (!canUseHint) return;
-              e.currentTarget.style.transform = "translateY(4px)";
-              e.currentTarget.style.boxShadow = "0 2px 0 #7e22ce";
-            }}
-            onMouseUp={(e) => {
-              if (!canUseHint) return;
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 6px 0 #7e22ce";
-            }}
-            onMouseLeave={(e) => {
-              if (!canUseHint) return;
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 6px 0 #7e22ce";
-            }}
-          >
-            HINT ({maxHints - hintsUsed} left)
-          </button>
+      {(hintsEnabled || timerEnabled) && (
+        <div className="flex justify-center items-center gap-4 mb-8">
+          {hintsEnabled && (
+            <button
+              onClick={useHint}
+              disabled={!canUseHint}
+              style={{
+                ...retroFont,
+                backgroundColor: canUseHint ? "#a855f7" : "#4b5563",
+                boxShadow: canUseHint ? "0 6px 0 #7e22ce" : "0 6px 0 #374151",
+                border: "none",
+                color: canUseHint ? "#fff" : "#9ca3af",
+                padding: "0.6rem 1.25rem",
+                fontSize: "0.55rem",
+                cursor: canUseHint ? "pointer" : "not-allowed",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                transition: "transform 0.1s, box-shadow 0.1s",
+              }}
+              onMouseDown={(e) => {
+                if (!canUseHint) return;
+                e.currentTarget.style.transform = "translateY(4px)";
+                e.currentTarget.style.boxShadow = "0 2px 0 #7e22ce";
+              }}
+              onMouseUp={(e) => {
+                if (!canUseHint) return;
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 6px 0 #7e22ce";
+              }}
+              onMouseLeave={(e) => {
+                if (!canUseHint) return;
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 6px 0 #7e22ce";
+              }}
+            >
+              HINT ({maxHints - hintsUsed} left)
+            </button>
+          )}
+          {timerEnabled && formattedTime && (
+            <div
+              style={{ ...retroFont }}
+              className="inline-flex items-center justify-center bg-black text-yellow-400 px-4 py-2 text-xs shadow-[0_6px_0_#6b7280]"
+            >
+              {formattedTime}
+            </div>
+          )}
         </div>
       )}
       <Keyboard
