@@ -1,1 +1,12 @@
 @import "./tailwind.css";
+
+html {
+  /* Reserve scrollbar gutter so content width does not jump between screens */
+  scrollbar-gutter: stable;
+}
+
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
+}
